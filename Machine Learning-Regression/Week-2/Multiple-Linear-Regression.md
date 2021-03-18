@@ -162,6 +162,9 @@ rss_testData
 
 ##### 11\. Now we will use the gradient descent to fit a model with more than 1 predictor variable (and an intercept). Use the following parameters:
 
-\#\#\#\#\* features = \[‘sqft\_living’, ‘sqft\_living15’\] \* output =
-‘price’ \* initial\_weights = \[-100000, 1, 1,\] (intecept,
-sqft\_living, sqft\_living\_15) \* step\_size = 4e-12 \* tolerance=1e9
+  - features = \[‘sqft\_living’, ‘sqft\_living15’\]
+  - output = ‘price’
+  - initial\_weights = \[-100000, 1, 1,\] (intecept, sqft\_living,
+    sqft\_living\_15)
+  - step\_size = 4e-12
+  - tolerance=1e9
