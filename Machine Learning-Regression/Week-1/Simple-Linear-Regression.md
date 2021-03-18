@@ -41,3 +41,96 @@ SLR_Intercept_Slope <- function(feature, output) {
         return(list(slope = slope, intercept = intercept))
 }
 ```
+
+##### 3\. Use the function to calculate the estimated slope and intercept on the training data to predict price given sqft\_living
+
+``` r
+sqft <- SLR_Intercept_Slope(trainData$sqft_living, trainData$price)
+sqft
+```
+
+    ## $slope
+    ## [1] 281.9588
+    ## 
+    ## $intercept
+    ## [1] -47116.08
+
+##### 4\. Write a function that accepts a column of data input\_features the slope and the intercept you learned, and returns a column of predictions ‘predicted\_output’ for each entry in the input column.
+
+``` r
+get_predictions <- function(feature, intercept, slope) {
+        return(intercept + slope*feature)
+}
+```
+
+##### 5\. QUIZ QUESTION: Using the slope and intercept from (4), what is the predicted price for a house with 2,650 sqft.
+
+``` r
+predictedPrice <- get_predictions(2650, sqft$intercept, sqft$slope)
+predictedPrice
+```
+
+    ## [1] 700074.8
+
+##### 6\. Write a function that accepts a column of data: input\_features and output and the regression parameters slope and intercept and returns the Residual Sum of Squares (RSS).
+
+``` r
+getRSS <- function(feature, output, intercept, slope) {
+        calculatedRSS <- sum((output - (intercept + slope*feature))**2)
+        return(calculatedRSS)
+}
+```
+
+##### 7\. QUIZ QUESTION: According to this function and the slope and intercept from (4) what is the RSS for the simple linear regression using sqft to predict prices on the TRAINING data?
+
+``` r
+rss_sqft_living <- getRSS(trainData$sqft_living, trainData$price, sqft$intercept, sqft$slope)
+rss_sqft_living
+```
+
+    ## [1] 1.201918e+15
+
+##### 8\. Write a function that accepts a column of data output and the regression parameters slope and intercept and outputs the colum of data estimated\_input.
+
+``` r
+get_estimated_Inputs <- function(output, intercept, slope) {
+        estimatedInputs <- (output - intercept)/slope
+        return(estimatedInputs)
+}
+```
+
+##### 9\. QUIZ QUESTION: According to this function and the regression slope and intercept from (3) what is the estimated sqft for a house costing $800,000?
+
+``` r
+estInputs <- get_estimated_Inputs(800000, sqft$intercept, sqft$slope)
+estInputs
+```
+
+    ## [1] 3004.396
+
+##### 10\. Use the function from (3) to calculate the Simple Linear Regression parameters slope and intercept for estimating price based on number of bedrooms. Save this slope and intercept for later.
+
+``` r
+numberOfBedrooms <- SLR_Intercept_Slope(trainData$bedrooms, trainData$price)
+numberOfBedrooms
+```
+
+    ## $slope
+    ## [1] 127589
+    ## 
+    ## $intercept
+    ## [1] 109473.2
+
+##### 11\. Compute RSS from both models using TEST data
+
+``` r
+rss_sqft_living <- getRSS(testData$sqft_living, testData$price, sqft$intercept, sqft$slope)
+rss_bedrooms <- getRSS(testData$bedrooms, testData$price, numberOfBedrooms$intercept, numberOfBedrooms$slope)
+c(rss_sqft_living, rss_bedrooms)
+```
+
+    ## [1] 2.754029e+14 4.933646e+14
+
+##### 12\. Compare the RSS from both models, which model has the smallest residual sum of squares? Why do you think this is the case?
+
+###### The model that uses house size (square feet) has the smallest RSS. This is likely do to the fact that square footage is more predictive of housing price than the number of bedrooms.
