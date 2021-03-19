@@ -133,4 +133,6 @@ c(rss_sqft_living, rss_bedrooms)
 
 ##### 12\. Compare the RSS from both models, which model has the smallest residual sum of squares? Why do you think this is the case?
 
-###### The model that uses house size (square feet) has the smallest RSS. This is likely do to the fact that square footage is more predictive of housing price than the number of bedrooms.
+The model that uses house size (square feet) has the smallest RSS. This
+is likely do to the fact that square footage is more predictive of
+housing price than the number of bedrooms.

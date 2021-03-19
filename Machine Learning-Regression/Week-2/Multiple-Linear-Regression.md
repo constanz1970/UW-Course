@@ -51,7 +51,7 @@ predict_output <- function(features_matrix, weights) {
 }
 ```
 
-##### 4\. If we have the values of a single input feature in an array feature and the prediction errors (predictions - output) then the derivative of the regression cost function with respect to the weight of feature is just wice the dot product between feature and errors. Write a fuction that accepts a feature array and the error array and return sthe derivative (a single number).
+##### 4\. If we have the values of a single input feature in an array feature and the prediction errors (predictions - output) then the derivative of the regression cost function with respect to the weight of feature is just twice the dot product between feature and errors. Write a fuction that accepts a feature array and the error array and return the derivative (a single number).
 
 ``` r
 feature_derivative <- function(feature_array, errors_array) {
@@ -96,7 +96,7 @@ get_gradient_descent <- function(features_matrix, output_array, initial_weights,
 }
 ```
 
-##### 6\. No we will run the regression\_gradient\_descent function on some acutal data. In particular we will use the gradient descent to estimate the model from Week 1 using just an intercept and slope. Use the following parameters:
+##### 6\. Now we will run the regression\_gradient\_descent function on some acutal data. In particular we will use the gradient descent to estimate the model from Week 1 using just an intercept and slope. Use the following parameters:
 
   - Features: sqft\_living
   - Output: price
@@ -113,52 +113,45 @@ tolerance <- 2.5e7
 listMatrices_trainData <- get_matrices_list(trainData, 'sqft_living', 'price')
 simple_weights_trainData <- get_gradient_descent(listMatrices_trainData$features_matrix, 
                                 listMatrices_trainData$output_matrix, initial_weights, step_size, tolerance)
-simple_weights_trainData
+round(simple_weights_trainData)
 ```
 
-    ##                    [,1]
-    ## ones        -46999.8872
-    ## sqft_living    281.9121
+    ##               [,1]
+    ## ones        -47000
+    ## sqft_living    282
 
 ##### 7\. QUIZ QUESTION: What is the value of the weight for sqft\_living the second element of simple\_weights (rounded to 1 decimal place)
 
 ``` r
-simple_weights_trainData['sqft_living',]
+round(simple_weights_trainData['sqft_living',],1)
 ```
 
     ## sqft_living 
-    ##    281.9121
+    ##       281.9
 
 ##### 8\. Now build a corresponding test\_simple\_feature\_matrix() and test\_output() function using test\_data. Using test\_simple\_feature\_matrix() and simple\_weights compute the predicted house prices on all the test data.
 
 ``` r
 listMatrices_testData <- get_matrices_list(testData, 'sqft_living', 'price')
-simple_weights_testData <- get_gradient_descent(listMatrices_testData$features_matrix, 
-                                listMatrices_testData$output_matrix, initial_weights, step_size, tolerance)
-simple_weights_testData
+predictions <- predict_output(listMatrices_testData$features_matrix, simple_weights_trainData)
 ```
-
-    ##                    [,1]
-    ## ones        -46999.8788
-    ## sqft_living    282.3595
 
 ##### 9\. QUIZ QUESTION: What is the predicted price for the 1st house in the TEST data set for model 1 (rounded to the nearest dollar)
 
 ``` r
-test_predictions <- predict_output(listMatrices_testData$features_matrix, simple_weights_testData)
-test_predictions[1,]
+predictions[1,]
 ```
 
-    ## [1] 356774.1
+    ## [1] 356134.4
 
 ##### 10\. Now compute the RSS on all test data for this model. Record the value and store it for later.
 
 ``` r
-rss_testData <- sum((testData$price - test_predictions)**2)
+rss_testData <- sum((testData$price - predictions)**2)
 rss_testData
 ```
 
-    ## [1] 2.753957e+14
+    ## [1] 2.754e+14
 
 ##### 11\. Now we will use the gradient descent to fit a model with more than 1 predictor variable (and an intercept). Use the following parameters:
 
@@ -168,3 +161,63 @@ rss_testData
     sqft\_living\_15)
   - step\_size = 4e-12
   - tolerance=1e9
+
+<!-- end list -->
+
+``` r
+new_features <- c('sqft_living', 'sqft_living15')
+output <- 'price'
+new_initial_weights <- c(-100000, 1, 1)
+new_step_size = 4e-12
+new_tolerance <- 1e9
+listMatrices_trainData_2V <- get_matrices_list(trainData, new_features, output)
+simple_weights_trainData_MV <- get_gradient_descent(listMatrices_trainData_2V$features_matrix, 
+                                                    listMatrices_trainData_2V$output_matrix,
+                                                    new_initial_weights, new_step_size, new_tolerance)
+simple_weights_trainData_MV
+```
+
+    ##                       [,1]
+    ## ones          -99999.96885
+    ## sqft_living      245.07260
+    ## sqft_living15     65.27953
+
+##### 12\. Use the regression weights from this second model (using sqft\_living and sqft\_living\_15) and predict the outcome of all the house prices on TEST data.
+
+``` r
+listMatrices_testData_2V <- get_matrices_list(testData, new_features, output)
+new_predictions <- predict_output(listMatrices_testData_2V$features_matrix, simple_weights_trainData_MV)
+```
+
+##### 13\. QUIZ QUESTION: What is the predicted price for the 1st house in the TEST data set for model 2 (round to the nearest dollar)
+
+``` r
+new_predictions[1,]
+```
+
+    ## [1] 366651.4
+
+##### 14\. What is the actual price for the 1st house in the TEST data
+
+``` r
+testData[1,3]
+```
+
+    ## [1] 310000
+
+##### 15\. QUIZ QUESTION: Which estimate was closer to the true price for the 1st house on the TEST data set, model 1 or model 2
+
+Model 1
+
+##### 16\. Now compute RSS on all TEST data for the second model. Record the value and store it for later
+
+``` r
+rss_testData_m2 <- sum((testData$price - new_predictions)**2)
+rss_testData_m2
+```
+
+    ## [1] 2.702634e+14
+
+##### 17\. QUIZ QUESTION: Which model (1 or 2) has lowest RSS on all the TEST DATA
+
+Model 2 with RSS of 2.702634e14
